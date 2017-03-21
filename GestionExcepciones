@@ -1,0 +1,48 @@
+package gestionexcepciones;
+
+/**
+ *Clase para comprobar y manejar excepciones
+ * @author Luis
+ */
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public class GestionExcepciones {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        int dato = -1;
+        // Llamamos al método de lectura controlando las diversas excepciones
+        try {
+            dato = leeDato();
+        } catch (FileNotFoundException|EOFException ex) {
+            System.out.println("El archivo no existe o está vacío");
+        } catch (IOException ex) {
+            System.out.println("Fallo de E/S");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            System.out.println("Dato = " + dato);
+        }
+        // TODO code application logic here
+    }
+    // Método que se encarga de leer el dato generando la excepción
+    static int leeDato() throws FileNotFoundException, EOFException, IOException {
+        int dato;
+                
+        try (FileInputStream entrada = new FileInputStream("MiArchivo.dat")) {
+            dato = entrada.read();
+            entrada.close();
+        } catch(final Exception ex) {
+            // Tratamiento de la excepción
+            throw ex;
+        }
+        
+        return dato;
+    }
+    
+}
