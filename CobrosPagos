@@ -1,0 +1,173 @@
+
+package cobrospagos2;
+
+import java.util.Scanner;
+import java.util.Date;
+import java.math.BigDecimal;
+//Objeto enum para mostrar las opciones del menú
+enum Opcion {
+    COBRO, PAGO, MOVIMIENTOS, SALIR
+};
+//Objeto enum para elegir el tipo de movimiento
+enum TipoMovimiento {
+    ABONO, CARGO
+};
+
+/**
+ *Clase que anota un movimiento en una cuenta 
+ * 
+ * @author Luis
+ * @version 1.0
+ * @since 02/03/2017
+ */
+class Movimiento {
+
+    private Date fechaDeRegistro;
+    private String concepto;
+    private TipoMovimiento tipo;
+    private BigDecimal importe;
+    
+    /**
+     * Constructor vacío
+     */
+    public Movimiento(){
+        fechaDeRegistro = null;
+        concepto = "";
+        tipo = null;
+        importe = null;
+    }
+    
+    /**
+     * Constructor que recibe parámetros
+     * @param d
+     * @param c
+     * @param t
+     * @param i 
+     */
+    public Movimiento(Date d, String c, TipoMovimiento t, BigDecimal i){
+        fechaDeRegistro = d;
+        concepto = c;
+        tipo = t;
+        importe = i;
+    }
+    public void setFecha(Date d){fechaDeRegistro = d;}
+    public void setConcepto(String c){concepto = c;}
+    public void setTipo(TipoMovimiento t){tipo = t;}
+    public void setImporte(BigDecimal i){importe = i;}
+    
+    public Date getFecha(){return fechaDeRegistro;}
+    public String getConcepto(){return concepto;}
+    public TipoMovimiento getTipo(){return tipo;}
+    public BigDecimal getImporte(){return importe;}
+
+    /**
+     * Devuelve un String con la información del movimiento
+     * @return 
+     */
+    @Override
+    public String toString() {
+        return tipo.name() + " el " + fechaDeRegistro + " por " + importe
+                + " euros. '" + concepto + "'";
+    }
+}
+/**
+ * Clase que guarda una lista de movimientos, contiene el método principal con el menú de opciones
+ * 
+ * @author Luis
+ * @version 1.0
+ * @since 02/03/2017
+ */
+public class CobrosPagos2 {
+    //Número máximo de movimientos en la lista
+    final static int MAX_MOVIMIENTOS = 1024;
+    //Lista de movimientos
+    Movimiento[] movimientos = new Movimiento[MAX_MOVIMIENTOS];
+    
+    int numMovimientos = 0;
+    /**
+     * Método con un bucle que muestra la lista de opciones y pide al usuario que escoja una o salir
+     */
+    void bucleApp(){
+        Opcion opcion;
+        
+        do{
+            muestraListaOpciones();
+            opcion = solicitaOpcion();
+            
+            switch (opcion){
+                case COBRO:
+                case PAGO:
+                    anotaMovimiento(
+                        opcion == Opcion.COBRO ? 
+                                TipoMovimiento.ABONO : TipoMovimiento.CARGO);
+                    break;
+                case MOVIMIENTOS:
+                    listaMovimientos();
+                    break;
+                    
+            }
+        }while(opcion != Opcion.SALIR);
+    }
+    
+    /**
+     * Muestra por pantalla la lista de opciones
+     */
+    void muestraListaOpciones(){
+        for(Opcion unaOpcion : Opcion.values()){
+            System.out.printf("\t%d -> %s\n",unaOpcion.ordinal(),unaOpcion.name());     
+        }
+    }
+    
+    /**
+     * Solicita al usuario una opción
+     * @return 
+     */
+    Opcion solicitaOpcion(){
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Elija una opcion: ");
+        int opcion = sc.nextInt();
+        return Opcion.values()[opcion];
+    }
+    
+    /**
+     * Recibe como parámetro el tipo de movimiento a realizar, pide al usuario el importe y el concepto 
+     * y anota el movimiento en la lista
+     * @param tipo 
+     */
+    void anotaMovimiento(TipoMovimiento tipo){
+        Scanner sc = new Scanner(System.in);
+        
+        movimientos[numMovimientos] = new Movimiento();
+        movimientos[numMovimientos].setTipo(tipo);// = tipo;
+        movimientos[numMovimientos].setFecha( new Date());
+        
+        System.out.print("Introduzca el concepto: ");
+        movimientos[numMovimientos].setConcepto(sc.nextLine());
+        
+        System.out.print("Introduzca el importe: ");
+        movimientos[numMovimientos].setImporte(new BigDecimal(sc.next()));
+        
+        System.out.println("Movimiento anotado.");
+        numMovimientos++;
+    }
+    
+    /**
+     * Muestra la lista de movimientos
+     */
+    void listaMovimientos(){
+        System.out.println();
+        for(int i = 0 ; i < numMovimientos ; i++)
+            System.out.println(movimientos[i]);
+        System.out.println();
+    }
+    
+    /**
+     * Método principal del programa
+     * @param args 
+     */
+    public static void main(String[] args) {
+        CobrosPagos2 c = new CobrosPagos2();
+        c.bucleApp();
+    }
+
+}
